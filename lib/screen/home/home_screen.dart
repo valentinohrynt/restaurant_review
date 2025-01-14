@@ -14,12 +14,39 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  bool _isSearchFocused = false;
+  String _previousSearch = '';
+
   @override
   void initState() {
     super.initState();
     Future.microtask(() {
       context.read<RestaurantListProvider>().fetchRestaurantList();
     });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged(String query) {
+    if (_previousSearch.isEmpty && query.isNotEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Searching for "$query"...'),
+          duration: const Duration(milliseconds: 800),
+          behavior: SnackBarBehavior.floating,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          margin: const EdgeInsets.all(8),
+        ),
+      );
+    }
+    _previousSearch = query;
+    context.read<RestaurantListProvider>().searchRestaurantList(query);
   }
 
   @override
@@ -51,6 +78,99 @@ class _HomeScreenState extends State<HomeScreen> {
                       Theme.of(context).colorScheme.primary.withOpacity(0.1),
                       Theme.of(context).colorScheme.background,
                     ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          SliverPersistentHeader(
+            pinned: true,
+            delegate: _SearchBarDelegate(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Focus(
+                  onFocusChange: (hasFocus) {
+                    setState(() => _isSearchFocused = hasFocus);
+                  },
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: _isSearchFocused
+                          ? [
+                              BoxShadow(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .primary
+                                    .withOpacity(0.2),
+                                blurRadius: 8,
+                                spreadRadius: 1,
+                              )
+                            ]
+                          : [],
+                    ),
+                    child: TextField(
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        hintText: "Search restaurant ...",
+                        contentPadding: const EdgeInsets.symmetric(
+                          vertical: 12,
+                        ),
+                        prefixIcon: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 200),
+                          child: _isSearchFocused
+                              ? Icon(
+                                  Icons.restaurant_menu,
+                                  color: Theme.of(context).colorScheme.primary,
+                                  size: 24,
+                                )
+                              : const Icon(
+                                  Icons.search,
+                                  size: 24,
+                                ),
+                        ),
+                        prefixIconConstraints: const BoxConstraints(
+                          minWidth: 48,
+                          minHeight: 48,
+                        ),
+                        suffixIcon: _searchController.text.isNotEmpty
+                            ? IconButton(
+                                icon: const Icon(Icons.clear),
+                                onPressed: () {
+                                  _searchController.clear();
+                                  _onSearchChanged('');
+                                  FocusScope.of(context).unfocus();
+                                },
+                              )
+                            : null,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: _isSearchFocused
+                                ? Theme.of(context).colorScheme.primary
+                                : Colors.grey,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: Colors.grey.withOpacity(0.5),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 2,
+                          ),
+                        ),
+                        filled: true,
+                        fillColor: _isSearchFocused
+                            ? Theme.of(context).colorScheme.surface
+                            : Colors.grey.withOpacity(0.1),
+                      ),
+                      onChanged: _onSearchChanged,
+                    ),
                   ),
                 ),
               ),
@@ -142,4 +262,30 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+}
+
+class _SearchBarDelegate extends SliverPersistentHeaderDelegate {
+  final Widget child;
+
+  _SearchBarDelegate({required this.child});
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Material(
+      color: Theme.of(context).colorScheme.background,
+      elevation: overlapsContent ? 4 : 0,
+      child: child,
+    );
+  }
+
+  @override
+  double get maxExtent => 70;
+
+  @override
+  double get minExtent => 70;
+
+  @override
+  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) =>
+      true;
 }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:restaurant_review/data/model/restaurant.dart';
+import 'package:restaurant_review/provider/detail/restaurant_detail_provider.dart';
+import 'package:restaurant_review/provider/detail/customer_review_list_provider.dart';
 import 'dart:ui';
 
 class RestaurantDetailBodyWidget extends StatelessWidget {
@@ -192,13 +195,123 @@ class RestaurantDetailBodyWidget extends StatelessWidget {
                 ],
                 const SizedBox(height: 24),
                 if (restaurant.customerReviews.isNotEmpty)
-                  _buildReviewsSection(context, restaurant.customerReviews),
+                  _buildReviewsSection(context, restaurant.customerReviews.reversed.toList()),
                 const SizedBox(height: 24)
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  void _showAddReviewDialog(BuildContext context) {
+    final nameController = TextEditingController();
+    final reviewController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          backgroundColor: Colors.transparent,
+          child: Stack(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Theme.of(context).cardColor.withOpacity(0.75),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10,
+                      spreadRadius: 5,
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Add Review',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 20),
+                    TextField(
+                      controller: nameController,
+                      decoration: InputDecoration(
+                        labelText: 'Name',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: reviewController,
+                      maxLines: 3,
+                      decoration: InputDecoration(
+                        labelText: 'Review',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text(
+                            'Cancel',
+                            style:
+                                TextStyle(color: Theme.of(context).hintColor),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        ElevatedButton(
+                          onPressed: () async {
+                            final provider =
+                                context.read<CustomerReviewListProvider>();
+                            final isSuccess = await provider.postReview(
+                              restaurant.id!,
+                              nameController.text,
+                              reviewController.text,
+                            );
+
+                            if (isSuccess) {
+                              Navigator.pop(context);
+                              final detailProvider =
+                                  context.read<RestaurantDetailProvider>();
+                              detailProvider
+                                  .fetchRestaurantDetail(restaurant.id!);
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content:
+                                      const Text('Failed to send the review'),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                          },
+                          child: const Text('Send'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -299,28 +412,26 @@ class RestaurantDetailBodyWidget extends StatelessWidget {
                 ),
           ),
           const SizedBox(height: 12),
-          ...items
-              .map((item) => Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context)
-                            .colorScheme
-                            .primaryContainer
-                            .withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        item.name ?? '',
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
+          ...items.map((item) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .primaryContainer
+                        .withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    item.name ?? '',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
                     ),
-                  ))
-              ,
+                  ),
+                ),
+              )),
         ],
       ),
     );
@@ -341,6 +452,13 @@ class RestaurantDetailBodyWidget extends StatelessWidget {
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
+              ),
+              TextButton.icon(
+                onPressed: () {
+                  _showAddReviewDialog(context);
+                },
+                icon: const Icon(Icons.add, size: 20),
+                label: const Text('Add Review'),
               ),
             ],
           ),
