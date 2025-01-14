@@ -10,8 +10,11 @@ import 'package:restaurant_review/screen/detail/detail_screen.dart';
 import 'package:restaurant_review/screen/main/main_screen.dart';
 import 'package:restaurant_review/static/navigation_route.dart';
 import 'package:restaurant_review/style/theme/restaurant_theme.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 void main() {
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (context) => IndexNavProvider()),
@@ -31,6 +34,7 @@ void main() {
     ],
     child: const MainApp(),
   ));
+  FlutterNativeSplash.remove();
 }
 
 class MainApp extends StatelessWidget {
