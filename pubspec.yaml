@@ -20,7 +20,7 @@ dependencies:
   lottie: ^3.3.1
   flutter_native_splash: ^2.4.4
 
-  flutter_launcher_icons: ^0.14.2
+  flutter_launcher_icons: 0.14.0
 
 dev_dependencies:
   flutter_test:
@@ -34,22 +34,11 @@ launcher_name:
   default: "Restaurant Review" 
 
 flutter_launcher_icons:
-  android: true
+  android: "launcher_icon"
   ios: true
-  image_path: "assets/images/launcher_icon.png"
-  min_sdk_android: 21
-  web:
-    generate: true
-    image_path: "assets/images/launcher_icon.png"
-    background_color: "#f4f4f4"
-    theme_color: "#f4f4f4"
-  windows:
-    generate: true
-    image_path: "assets/images/launcher_icon.png"
-    icon_size: 48
-  macos:
-    generate: true
-    image_path: "assets/images/launcher_icon.png"
+  image_path: "assets/icon/icon.png"
+  adaptive_icon_background: "#f4f4f4"
+  adaptive_icon_foreground: "assets/icon/icon.png"
 
 flutter_native_splash:
   # This package generates native code to customize Flutter's default white native splash screen
@@ -208,7 +197,6 @@ flutter:
 
   assets:
     - assets/animations/
-    - assets/images/
 
   fonts:
     - family: Poppins
