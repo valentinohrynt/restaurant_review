@@ -6,6 +6,8 @@ import 'package:restaurant_review/provider/detail/favorite_list_provider.dart';
 import 'package:restaurant_review/provider/detail/restaurant_detail_provider.dart';
 import 'package:restaurant_review/provider/home/restaurant_list_provider.dart';
 import 'package:restaurant_review/provider/main/index_nav_provider.dart';
+import 'package:restaurant_review/provider/settings/notification_provider.dart';
+import 'package:restaurant_review/provider/settings/theme_provider.dart';
 import 'package:restaurant_review/screen/detail/detail_screen.dart';
 import 'package:restaurant_review/screen/main/main_screen.dart';
 import 'package:restaurant_review/static/navigation_route.dart';
@@ -31,6 +33,8 @@ void main() {
         create: (context) =>
             CustomerReviewListProvider(context.read<ApiService>()),
       ),
+      ChangeNotifierProvider(create: (context) => NotificationProvider()),
+      ChangeNotifierProvider(create: (context) => ThemeProvider())
     ],
     child: const MainApp(),
   ));
@@ -42,50 +46,55 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Restaurant App',
-      theme: RestaurantTheme.lightTheme,
-      darkTheme: RestaurantTheme.darkTheme,
-      themeMode: ThemeMode.system,
-      initialRoute: NavigationRoute.mainRoute.name,
-      onGenerateRoute: (settings) {
-        switch (settings.name) {
-          case '/':
-            return PageRouteBuilder(
-              pageBuilder: (_, __, ___) => const MainScreen(),
-              transitionsBuilder: (_, animation, __, child) {
-                return FadeTransition(
-                  opacity: animation,
-                  child: child,
+    return Consumer<ThemeProvider>(builder: (context, themeProvider, child) {
+      return Consumer<NotificationProvider>(
+          builder: (context, notificationProvider, child) {
+        return MaterialApp(
+          title: 'Restaurant App',
+          theme: RestaurantTheme.lightTheme,
+          darkTheme: RestaurantTheme.darkTheme,
+          themeMode: themeProvider.themeMode,
+          initialRoute: NavigationRoute.mainRoute.name,
+          onGenerateRoute: (settings) {
+            switch (settings.name) {
+              case '/':
+                return PageRouteBuilder(
+                  pageBuilder: (_, __, ___) => const MainScreen(),
+                  transitionsBuilder: (_, animation, __, child) {
+                    return FadeTransition(
+                      opacity: animation,
+                      child: child,
+                    );
+                  },
                 );
-              },
-            );
 
-          case '/detail':
-            final restaurantId = settings.arguments as String;
-            return PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) =>
-                  DetailScreen(restaurantId: restaurantId),
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) {
-                const begin = Offset(1.0, 0.0);
-                const end = Offset.zero;
-                const curve = Curves.easeInOutCubic;
+              case '/detail':
+                final restaurantId = settings.arguments as String;
+                return PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                      DetailScreen(restaurantId: restaurantId),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    const begin = Offset(1.0, 0.0);
+                    const end = Offset.zero;
+                    const curve = Curves.easeInOutCubic;
 
-                var tween = Tween(begin: begin, end: end)
-                    .chain(CurveTween(curve: curve));
+                    var tween = Tween(begin: begin, end: end)
+                        .chain(CurveTween(curve: curve));
 
-                return SlideTransition(
-                  position: animation.drive(tween),
-                  child: child,
+                    return SlideTransition(
+                      position: animation.drive(tween),
+                      child: child,
+                    );
+                  },
+                  transitionDuration: const Duration(milliseconds: 500),
+                  reverseTransitionDuration: const Duration(milliseconds: 500),
                 );
-              },
-              transitionDuration: const Duration(milliseconds: 500),
-              reverseTransitionDuration: const Duration(milliseconds: 500),
-            );
-        }
-        return null;
-      },
-    );
+            }
+            return null;
+          },
+        );
+      });
+    });
   }
 }

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:restaurant_review/provider/main/index_nav_provider.dart';
 import 'package:restaurant_review/screen/favorite/favorite_screen.dart';
 import 'package:restaurant_review/screen/home/home_screen.dart';
+import 'package:restaurant_review/screen/settings/settings_screen.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
@@ -14,7 +15,8 @@ class MainScreen extends StatelessWidget {
         builder: (context, value, child) {
           return switch (value.currentIndex) {
             0 => const HomeScreen(),
-            _ => const FavoriteScreen(),
+            1 => const FavoriteScreen(),
+            _ => const SettingsScreen(),
           };
         },
       ),
@@ -36,6 +38,11 @@ class MainScreen extends StatelessWidget {
             ),
             label: "Favorite",
             tooltip: "Favorite",
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: "Settings",
+            tooltip: "Settings",
           ),
         ],
       ),
