@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/foundation.dart';
 import 'package:restaurant_review/data/model/restaurant.dart';
 import 'package:restaurant_review/data/local/database_helper.dart';
 
@@ -23,7 +23,9 @@ class FavoriteListProvider extends ChangeNotifier {
       _favoriteList.clear();
       _favoriteList.addAll(favorites);
     } catch (e) {
-      print('Error loading favorites: $e');
+      if (kDebugMode) {
+        print('Error loading favorites: $e');
+      }
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -35,7 +37,9 @@ class FavoriteListProvider extends ChangeNotifier {
       await _databaseHelper.insertFavorite(restaurant);
       await _loadFavorites();
     } catch (e) {
-      print('Error adding favorite: $e');
+      if (kDebugMode) {
+        print('Error adding favorite: $e');
+      }
     }
   }
 
@@ -44,7 +48,9 @@ class FavoriteListProvider extends ChangeNotifier {
       await _databaseHelper.removeFavorite(restaurant.id);
       await _loadFavorites();
     } catch (e) {
-      print('Error removing favorite: $e');
+      if (kDebugMode) {
+        print('Error removing favorite: $e');
+      }
     }
   }
 
@@ -52,7 +58,9 @@ class FavoriteListProvider extends ChangeNotifier {
     try {
       return await _databaseHelper.isFavorite(restaurant.id);
     } catch (e) {
-      print('Error checking favorite status: $e');
+      if (kDebugMode) {
+        print('Error checking favorite status: $e');
+      }
       return false;
     }
   }

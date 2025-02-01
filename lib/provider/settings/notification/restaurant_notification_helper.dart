@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:restaurant_review/data/model/restaurant.dart';
@@ -65,7 +66,9 @@ class RestaurantNotificationHelper {
         platformChannelSpecifics,
       );
     } catch (e) {
-      print('Error showing notification: $e');
+      if (kDebugMode) {
+        print('Error showing notification: $e');
+      }
     }
   }
 }

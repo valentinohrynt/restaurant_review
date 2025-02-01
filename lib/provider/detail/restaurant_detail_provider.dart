@@ -1,3 +1,5 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'package:flutter/widgets.dart';
 import 'package:restaurant_review/data/api/api_service.dart';
 import 'package:restaurant_review/data/local/database_helper.dart';

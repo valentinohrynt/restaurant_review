@@ -1,3 +1,5 @@
+// ignore_for_file: unused_catch_clause
+
 import 'package:flutter/widgets.dart';
 import 'package:restaurant_review/data/api/api_service.dart';
 import 'package:restaurant_review/static/customer_review_list_result_state.dart';
