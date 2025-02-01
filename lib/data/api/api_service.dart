@@ -14,10 +14,10 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return RestaurantListResponse.fromJson(json.decode(response.body));
       } else {
-        throw Exception('Failed to load restaurant list');
+        throw Exception('Something went wrong. Please try again.');
       }
     } catch (e) {
-      rethrow;
+      throw Exception('Failed to load restaurant list. Please check your connection');
     }
   }
 
@@ -28,10 +28,10 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return RestaurantDetailResponse.fromJson(json.decode(response.body));
       } else {
-        throw Exception('Failed to load restaurant detail');
+        throw Exception('Something went wrong. Please try again.');
       }
     } catch (e) {
-      rethrow;
+      throw Exception('Failed to load restaurant detail. Please check your connection');
     }
   }
 
@@ -42,10 +42,10 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return RestaurantListResponse.fromJson(json.decode(response.body));
       } else {
-        throw Exception('Failed to search restaurant');
+        throw Exception('Something went wrong. Please try again.');
       }
     } catch (e) {
-      rethrow;
+      throw Exception('Failed to search restaurant. Please check your connection');
     }
   }
 
@@ -67,10 +67,10 @@ class ApiService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         return CustomerReviewListResponse.fromJson(json.decode(response.body));
       } else {
-        throw Exception('Failed to post review');
+        throw Exception('Something went wrong. Please try again.');
       }
     } catch (e) {
-      rethrow;
+      throw Exception('Failed to post review. Please check your connection');
     }
   }
 }

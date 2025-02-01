@@ -20,7 +20,7 @@ class CustomerReviewListProvider extends ChangeNotifier {
 
       if (result.error != false) {
         _resultState =
-            CustomerReviewListErrorState(result.message ?? 'Unknown error');
+            CustomerReviewListErrorState('Something went wrong. Please try again.');
         notifyListeners();
         return false;
       } else {
@@ -28,7 +28,7 @@ class CustomerReviewListProvider extends ChangeNotifier {
         return true;
       }
     } on Exception catch (e) {
-      _resultState = CustomerReviewListErrorState(e.toString());
+      _resultState = CustomerReviewListErrorState('Failed to post review, please try again later.');
       notifyListeners();
       return false;
     }

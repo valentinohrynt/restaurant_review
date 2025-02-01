@@ -22,9 +22,9 @@ class _FavoriteIconWidgetState extends State<FavoriteIconWidget> {
     final favoriteListProvider = context.read<FavoriteListProvider>();
     final favoriteIconProvider = context.read<FavoriteIconProvider>();
 
-    Future.microtask(() {
+    Future.microtask(() async {
       if (widget.restaurant.id != null) {
-        final isFavorited = favoriteListProvider.isFavorite(widget.restaurant);
+        final isFavorited = await favoriteListProvider.isFavorite(widget.restaurant);
         favoriteIconProvider.isFavorite = isFavorited;
       }
     });

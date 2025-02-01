@@ -20,10 +20,12 @@ class DetailScreen extends StatefulWidget {
   State<DetailScreen> createState() => _DetailScreenState();
 }
 
-class _DetailScreenState extends State<DetailScreen> with SingleTickerProviderStateMixin {
+class _DetailScreenState extends State<DetailScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
+  bool _isRefreshing = false;
 
   @override
   void initState() {
@@ -50,7 +52,8 @@ class _DetailScreenState extends State<DetailScreen> with SingleTickerProviderSt
     ));
 
     Future.microtask(() {
-      context.read<RestaurantDetailProvider>()
+      context
+          .read<RestaurantDetailProvider>()
           .fetchRestaurantDetail(widget.restaurantId);
       _controller.forward();
     });
@@ -100,10 +103,11 @@ class _DetailScreenState extends State<DetailScreen> with SingleTickerProviderSt
       title: Text(
         "Restaurant Details",
         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-          fontWeight: FontWeight.bold,
-        ),
+              fontWeight: FontWeight.bold,
+            ),
       ),
       actions: [
+        _buildRefreshButton(),
         Padding(
           padding: const EdgeInsets.only(right: 8),
           child: ChangeNotifierProvider(
@@ -123,111 +127,116 @@ class _DetailScreenState extends State<DetailScreen> with SingleTickerProviderSt
     );
   }
 
+  Widget _buildRefreshButton() {
+    return Consumer<RestaurantDetailProvider>(
+      builder: (context, provider, _) {
+        if (provider.resultState is! RestaurantDetailLoadedState) {
+          return const SizedBox();
+        }
+
+        return Padding(
+          padding: const EdgeInsets.only(right: 8),
+          child: IconButton(
+            icon: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: _isRefreshing
+                  ? SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    )
+                  : Icon(
+                      provider.isFromLocal
+                          ? Icons.sync_rounded
+                          : Icons.sync_disabled_rounded,
+                      color: provider.isFromLocal
+                          ? Theme.of(context).colorScheme.primary
+                          : Theme.of(context).colorScheme.outline,
+                    ),
+            ),
+            onPressed: _isRefreshing
+                ? null
+                : () async {
+                    setState(() => _isRefreshing = true);
+                    await provider.refreshFromApi(widget.restaurantId);
+                    if (mounted) {
+                      setState(() => _isRefreshing = false);
+                    }
+                  },
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildBody() {
     return Consumer<RestaurantDetailProvider>(
       builder: (context, provider, _) {
-        return switch (provider.resultState) {
-          RestaurantDetailLoadingState() => Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.4,
-                  height: MediaQuery.of(context).size.width * 0.4,
-                  child: Lottie.asset(
-                    'assets/animations/loading-anim.json',
-                    fit: BoxFit.contain,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'Loading amazing details...',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-              ],
+        return RefreshIndicator(
+          onRefresh: () async {
+            await provider.refreshFromApi(widget.restaurantId);
+          },
+          child: switch (provider.resultState) {
+            RestaurantDetailLoadingState() => _buildLoadingState(),
+            RestaurantDetailErrorState(error: var message) =>
+              _buildErrorState(message, provider),
+            RestaurantDetailLoadedState(data: var restaurant) =>
+              _buildLoadedState(restaurant, provider.isFromLocal),
+            RestaurantDetailNoneState() => _buildEmptyState(),
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildLoadingState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.4,
+            height: MediaQuery.of(context).size.width * 0.4,
+            child: Lottie.asset(
+              'assets/animations/loading-anim.json',
+              fit: BoxFit.contain,
             ),
           ),
-          RestaurantDetailErrorState(error: var message) => Center(
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: SlideTransition(
-                position: _slideAnimation,
-                child: Container(
-                  margin: const EdgeInsets.all(24),
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.errorContainer.withOpacity(0.8),
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Theme.of(context).shadowColor.withOpacity(0.1),
-                        blurRadius: 20,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.error_outline_rounded,
-                        size: 48,
-                        color: Theme.of(context).colorScheme.error,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Oops! Something went wrong',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: Theme.of(context).colorScheme.onErrorContainer,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        message,
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Theme.of(context).colorScheme.onErrorContainer,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      FilledButton.tonal(
-                        onPressed: () {
-                          provider.fetchRestaurantDetail(widget.restaurantId);
-                        },
-                        style: FilledButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 32,
-                            vertical: 16,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        child: const Text('Try Again'),
-                      ),
-                    ],
-                  ),
+          const SizedBox(height: 24),
+          Text(
+            'Loading amazing details...',
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
                 ),
-              ),
-            ),
           ),
-          RestaurantDetailLoadedState(data: var restaurant) =>
-            FadeTransition(
-              opacity: _fadeAnimation,
-              child: SlideTransition(
-                position: _slideAnimation,
-                child: RestaurantDetailBodyWidget(restaurant: restaurant),
-              ),
-            ),
-          RestaurantDetailNoneState() => Center(
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState(String message, RestaurantDetailProvider provider) {
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Center(
+        child: FadeTransition(
+          opacity: _fadeAnimation,
+          child: SlideTransition(
+            position: _slideAnimation,
             child: Container(
               margin: const EdgeInsets.all(24),
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+                color: Theme.of(context)
+                    .colorScheme
+                    .errorContainer
+                    .withOpacity(0.8),
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
@@ -241,29 +250,145 @@ class _DetailScreenState extends State<DetailScreen> with SingleTickerProviderSt
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(
-                    Icons.restaurant_outlined,
+                    Icons.error_outline_rounded,
                     size: 48,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: Theme.of(context).colorScheme.error,
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'No Restaurant Found',
+                    'Oops! Something went wrong',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          color: Theme.of(context).colorScheme.onErrorContainer,
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'This restaurant seems to have vanished into thin air!',
+                    message,
                     textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyLarge,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: Theme.of(context).colorScheme.onErrorContainer,
+                        ),
+                  ),
+                  const SizedBox(height: 24),
+                  FilledButton.tonal(
+                    onPressed: () {
+                      provider.fetchRestaurantDetail(widget.restaurantId);
+                    },
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 32,
+                        vertical: 16,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    child: const Text('Try Again'),
                   ),
                 ],
               ),
             ),
           ),
-        };
-      },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoadedState(var restaurant, bool isFromLocal) {
+    return Stack(
+      children: [
+        FadeTransition(
+          opacity: _fadeAnimation,
+          child: SlideTransition(
+            position: _slideAnimation,
+            child: RestaurantDetailBodyWidget(restaurant: restaurant),
+          ),
+        ),
+        if (isFromLocal)
+          Positioned(
+            top: kToolbarHeight + MediaQuery.of(context).padding.top,
+            left: 0,
+            right: 0,
+            child: Container(
+              margin: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Theme.of(context)
+                    .colorScheme
+                    .tertiaryContainer
+                    .withOpacity(0.9),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.info_outline_rounded,
+                    size: 20,
+                    color: Theme.of(context).colorScheme.onTertiaryContainer,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'You are offline, showing saved data. Reconnect and refresh to get updates.',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onTertiaryContainer,
+                          ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Center(
+        child: Container(
+          margin: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).shadowColor.withOpacity(0.1),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.restaurant_outlined,
+                size: 48,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'No Restaurant Found',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'This restaurant seems to have vanished into thin air!',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

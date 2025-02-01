@@ -4,6 +4,7 @@ import 'package:restaurant_review/data/model/restaurant.dart';
 import 'package:restaurant_review/provider/detail/restaurant_detail_provider.dart';
 import 'package:restaurant_review/provider/detail/customer_review_list_provider.dart';
 import 'dart:ui';
+import 'package:restaurant_review/screen/component/marquee_text.dart';
 
 class RestaurantDetailBodyWidget extends StatelessWidget {
   const RestaurantDetailBodyWidget({
@@ -121,12 +122,12 @@ class RestaurantDetailBodyWidget extends StatelessWidget {
                                           size: 18),
                                       const SizedBox(width: 4),
                                       Expanded(
-                                        child: Text(
-                                          '${restaurant.address}, ${restaurant.city}',
+                                        child: MarqueeText(
+                                          text:
+                                              '${restaurant.address}, ${restaurant.city}',
                                           style: TextStyle(
                                               color: Colors.white
                                                   .withOpacity(0.9)),
-                                          overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
                                     ],
@@ -140,7 +141,7 @@ class RestaurantDetailBodyWidget extends StatelessWidget {
                     ),
                   ),
                 ),
-              ),
+              )
             ],
           ),
           Container(
@@ -195,7 +196,8 @@ class RestaurantDetailBodyWidget extends StatelessWidget {
                 ],
                 const SizedBox(height: 24),
                 if (restaurant.customerReviews.isNotEmpty)
-                  _buildReviewsSection(context, restaurant.customerReviews.reversed.toList()),
+                  _buildReviewsSection(
+                      context, restaurant.customerReviews.reversed.toList()),
                 const SizedBox(height: 24)
               ],
             ),

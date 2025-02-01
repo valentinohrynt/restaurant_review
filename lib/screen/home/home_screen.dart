@@ -220,36 +220,39 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   RestaurantListErrorState(error: var message) =>
                     SliverFillRemaining(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              message,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(
-                                    color: Colors.grey[600],
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                message,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(
+                                      color: Colors.grey[600],
+                                    ),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 16),
+                              ElevatedButton.icon(
+                                onPressed: () => provider.fetchRestaurantList(),
+                                icon: const Icon(Icons.refresh),
+                                label: const Text('Try Again'),
+                                style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                    vertical: 12,
                                   ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 16),
-                            ElevatedButton.icon(
-                              onPressed: () => provider.fetchRestaurantList(),
-                              icon: const Icon(Icons.refresh),
-                              label: const Text('Try Again'),
-                              style: ElevatedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 24,
-                                  vertical: 12,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ),

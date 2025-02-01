@@ -6,7 +6,7 @@ import 'package:restaurant_review/provider/detail/favorite_list_provider.dart';
 import 'package:restaurant_review/provider/detail/restaurant_detail_provider.dart';
 import 'package:restaurant_review/provider/home/restaurant_list_provider.dart';
 import 'package:restaurant_review/provider/main/index_nav_provider.dart';
-import 'package:restaurant_review/provider/settings/notification_provider.dart';
+import 'package:restaurant_review/provider/settings/notification/notification_provider.dart';
 import 'package:restaurant_review/provider/settings/theme_provider.dart';
 import 'package:restaurant_review/screen/detail/detail_screen.dart';
 import 'package:restaurant_review/screen/main/main_screen.dart';

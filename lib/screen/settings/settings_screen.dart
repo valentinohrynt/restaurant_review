@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:restaurant_review/provider/settings/notification_provider.dart';
+import 'package:restaurant_review/provider/settings/notification/notification_provider.dart';
 import 'package:restaurant_review/provider/settings/theme_provider.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -62,9 +62,9 @@ class SettingsScreen extends StatelessWidget {
                       context,
                       icon: Icons.notifications,
                       title: 'Daily Notifications',
-                      value: notificationProvider.dailyNotificationsEnabled,
+                      value: notificationProvider.isDailyReminderActive,
                       onChanged: (_) =>
-                          notificationProvider.toggleDailyNotifications(),
+                          notificationProvider.toggleDailyReminder(),
                     );
                   },
                 ),

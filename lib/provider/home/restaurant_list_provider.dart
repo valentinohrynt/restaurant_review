@@ -20,14 +20,14 @@ class RestaurantListProvider extends ChangeNotifier {
 
       if (result.error != false) {
         _resultState =
-            RestaurantListErrorState(result.message ?? 'Unknown error');
+            RestaurantListErrorState('Something went wrong. Please try again.');
         notifyListeners();
       } else {
         _resultState = RestaurantListLoadedState(result.restaurants);
         notifyListeners();
       }
     } on Exception catch (e) {
-      _resultState = RestaurantListErrorState(e.toString());
+      _resultState = RestaurantListErrorState('Failed to load restaurant list. Please check your connection');
       notifyListeners();
     }
   }
@@ -41,14 +41,14 @@ class RestaurantListProvider extends ChangeNotifier {
 
       if (result.error != false) {
         _resultState =
-            RestaurantListErrorState(result.message ?? 'Unknown error');
+            RestaurantListErrorState('Something went wrong. Please try again.');
         notifyListeners();
       } else {
         _resultState = RestaurantListLoadedState(result.restaurants);
         notifyListeners();
       }
     } on Exception catch (e) {
-      _resultState = RestaurantListErrorState(e.toString());
+      _resultState = RestaurantListErrorState('Failed to search restaurant. Please check your connection');
       notifyListeners();
     }
   }
