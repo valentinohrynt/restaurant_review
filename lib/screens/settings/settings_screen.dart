@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:restaurant_review/provider/settings/notification/notification_provider.dart';
-import 'package:restaurant_review/provider/settings/theme_provider.dart';
+import 'package:restaurant_review/providers/settings/notification/notification_provider.dart';
+import 'package:restaurant_review/providers/settings/theme_provider.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});

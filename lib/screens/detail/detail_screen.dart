@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:lottie/lottie.dart';
 import 'dart:ui';
-import 'package:restaurant_review/provider/detail/restaurant_detail_provider.dart';
-import 'package:restaurant_review/provider/detail/favorite_icon_provider.dart';
-import 'package:restaurant_review/screen/component/restaurant_detail_body_widget.dart';
-import 'package:restaurant_review/screen/component/favorite_icon_widget.dart';
+import 'package:restaurant_review/providers/detail/restaurant_detail_provider.dart';
+import 'package:restaurant_review/providers/detail/favorite_icon_provider.dart';
+import 'package:restaurant_review/screens/components/restaurant_detail_body_widget.dart';
+import 'package:restaurant_review/screens/components/favorite_icon_widget.dart';
 import 'package:restaurant_review/static/restaurant_detail_result_state.dart';
 
 class DetailScreen extends StatefulWidget {
@@ -330,7 +330,7 @@ class _DetailScreenState extends State<DetailScreen>
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'You are offline, showing saved data. Reconnect and refresh to get updates.',
+                      'You are viewing locally stored data. Connect to the internet and refresh to see the latest updates.',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: Theme.of(context)
                                 .colorScheme

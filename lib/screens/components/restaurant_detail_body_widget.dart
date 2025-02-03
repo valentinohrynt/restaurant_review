@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:restaurant_review/data/model/restaurant.dart';
-import 'package:restaurant_review/provider/detail/restaurant_detail_provider.dart';
-import 'package:restaurant_review/provider/detail/customer_review_list_provider.dart';
+import 'package:restaurant_review/providers/detail/restaurant_detail_provider.dart';
+import 'package:restaurant_review/providers/detail/customer_review_list_provider.dart';
 import 'dart:ui';
-import 'package:restaurant_review/screen/component/marquee_text.dart';
+import 'package:restaurant_review/screens/components/marquee_text.dart';
 
 class RestaurantDetailBodyWidget extends StatelessWidget {
   const RestaurantDetailBodyWidget({

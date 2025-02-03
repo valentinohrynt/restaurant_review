@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:restaurant_review/provider/detail/favorite_list_provider.dart';
-import 'package:restaurant_review/screen/component/restaurant_card_widget.dart';
+import 'package:restaurant_review/providers/detail/favorite_list_provider.dart';
+import 'package:restaurant_review/screens/components/restaurant_card_widget.dart';
 import 'package:restaurant_review/static/navigation_route.dart';
 
 class FavoriteScreen extends StatelessWidget {

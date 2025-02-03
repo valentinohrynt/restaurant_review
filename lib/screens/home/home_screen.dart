@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:lottie/lottie.dart';
-import 'package:restaurant_review/provider/home/restaurant_list_provider.dart';
-import 'package:restaurant_review/screen/component/restaurant_card_widget.dart';
+import 'package:restaurant_review/providers/home/restaurant_list_provider.dart';
+import 'package:restaurant_review/screens/components/restaurant_card_widget.dart';
 import 'package:restaurant_review/static/navigation_route.dart';
 import 'package:restaurant_review/static/restaurant_list_result_state.dart';
 
