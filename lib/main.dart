@@ -50,7 +50,7 @@ class MainApp extends StatelessWidget {
       return Consumer<NotificationProvider>(
           builder: (context, notificationProvider, child) {
         return MaterialApp(
-          title: 'Restaurant App',
+          title: 'Restaurant Review',
           theme: RestaurantTheme.lightTheme,
           darkTheme: RestaurantTheme.darkTheme,
           themeMode: themeProvider.themeMode,
