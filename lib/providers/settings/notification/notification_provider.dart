@@ -9,11 +9,13 @@ class NotificationProvider with ChangeNotifier {
   static const String taskUniqueName = 'dailyRestaurantNotification';
   final _notificationService = NotificationService();
   int _notificationId = 3699;
+  late int id;
   bool get isDailyReminderActive => _isDailyReminderActive;
 
   NotificationProvider() {
     _notificationService.init();
     _loadNotificationStatus();
+    id = _notificationId += 1;
   }
 
   Future<void> requestPermission() async {
@@ -48,7 +50,7 @@ class NotificationProvider with ChangeNotifier {
     _isDailyReminderActive = prefs.getBool('dailyRestaurantReminder') ?? false;
 
     if (_isDailyReminderActive) {
-      await _notificationService.scheduleDailyElevenAMNotification(id: 3);
+      await _notificationService.scheduleDailyElevenAMNotification(id: id);
     }
 
     notifyListeners();
@@ -64,7 +66,6 @@ class NotificationProvider with ChangeNotifier {
 
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('dailyRestaurantReminder', _isDailyReminderActive);
-      int id = _notificationId += 1;
       if (_isDailyReminderActive) {
         await _notificationService.scheduleDailyElevenAMNotification(
             id: id);

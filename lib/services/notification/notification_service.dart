@@ -176,7 +176,7 @@ class NotificationService {
 
       await flutterLocalNotificationsPlugin.zonedSchedule(
         id,
-        '🔥 Time for lunch! Today Recommendation: ${restaurant.name} 🍕',
+        '🔥 Time for lunch! Today Recommendation: ${restaurant.name} 🍽️',
         '📍 Location: ${restaurant.city} | ⭐ Rating: ${restaurant.rating} 🌟',
         datetimeSchedule,
         notificationDetails,
@@ -186,33 +186,12 @@ class NotificationService {
         matchDateTimeComponents: DateTimeComponents.time,
       );
 
-      showTestNotification();
-
-      checkPendingNotifications();
+      if (kDebugMode) {
+        checkPendingNotifications();
+      }
     } catch (e) {
       print('Error scheduling notification: $e');
     }
-  }
-
-  Future<void> showTestNotification() async {
-    final androidPlatformChannelSpecifics = AndroidNotificationDetails(
-      'confirmation_notification_channel',
-      'Confirmation Channel',
-      importance: Importance.max,
-      priority: Priority.high,
-    );
-
-    final notificationDetails = NotificationDetails(
-      android: androidPlatformChannelSpecifics,
-      iOS: DarwinNotificationDetails(),
-    );
-
-    await flutterLocalNotificationsPlugin.show(
-      999,
-      'Daily Notification Turned On',
-      'You will receive daily restaurant recommendations at 11 AM',
-      notificationDetails,
-    );
   }
 
   Future<List<PendingNotificationRequest>> pendingNotificationRequests() async {
