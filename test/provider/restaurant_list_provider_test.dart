@@ -25,30 +25,32 @@ void main() {
 
     // Test 2: Memastikan harus mengembalikan daftar restoran ketika pengambilan data API berhasil
     test('should return restaurant list when API call is successful', () async {
-      when(mockApiService.getRestaurantList()).thenAnswer((_) async =>
-          RestaurantListResponse.fromJson({
-            'error': false,
-            'message': 'success',
-            'count': 2,
-            'restaurants': [
-              {
-                'id': '1',
-                'name': 'Warung Bu Ani',
-                'description': 'Sajian khas Banyuwangi dengan cita rasa autentik.',
-                'pictureId': 'pic1',
-                'city': 'Banyuwangi',
-                'rating': 4.7
-              },
-              {
-                'id': '2',
-                'name': 'Sego Tempong Mbok Wah',
-                'description': 'Nasi tempong pedas yang terkenal di Banyuwangi.',
-                'pictureId': 'pic2',
-                'city': 'Banyuwangi',
-                'rating': 4.6
-              }
-            ]
-          }));
+      when(mockApiService.getRestaurantList())
+          .thenAnswer((_) async => RestaurantListResponse.fromJson({
+                'error': false,
+                'message': 'success',
+                'count': 2,
+                'restaurants': [
+                  {
+                    'id': '1',
+                    'name': 'Warung Bu Ani',
+                    'description':
+                        'Sajian khas Banyuwangi dengan cita rasa autentik.',
+                    'pictureId': 'pic1',
+                    'city': 'Banyuwangi',
+                    'rating': 4.7
+                  },
+                  {
+                    'id': '2',
+                    'name': 'Sego Tempong Mbok Wah',
+                    'description':
+                        'Nasi tempong pedas yang terkenal di Banyuwangi.',
+                    'pictureId': 'pic2',
+                    'city': 'Banyuwangi',
+                    'rating': 4.6
+                  }
+                ]
+              }));
       await provider.fetchRestaurantList();
       expect(provider.resultState, isA<RestaurantListLoadedState>());
       final state = provider.resultState as RestaurantListLoadedState;
@@ -79,7 +81,7 @@ void main() {
           }));
 
       provider.fetchRestaurantList();
-      
+
       expect(provider.resultState, isA<RestaurantListLoadingState>());
     });
 
@@ -102,22 +104,23 @@ void main() {
 
     // Test 6: Memastikan data restoran memiliki properti yang benar
     test('should have correct restaurant properties', () async {
-      when(mockApiService.getRestaurantList()).thenAnswer((_) async =>
-          RestaurantListResponse.fromJson({
-            'error': false,
-            'message': 'success',
-            'count': 1,
-            'restaurants': [
-              {
-                'id': '1',
-                'name': 'Pondok Rasa Banyuwangi',
-                'description': 'Menyediakan hidangan laut segar khas Banyuwangi.',
-                'pictureId': 'pic1',
-                'city': 'Banyuwangi',
-                'rating': 4.8
-              }
-            ]
-          }));
+      when(mockApiService.getRestaurantList())
+          .thenAnswer((_) async => RestaurantListResponse.fromJson({
+                'error': false,
+                'message': 'success',
+                'count': 1,
+                'restaurants': [
+                  {
+                    'id': '1',
+                    'name': 'Pondok Rasa Banyuwangi',
+                    'description':
+                        'Menyediakan hidangan laut segar khas Banyuwangi.',
+                    'pictureId': 'pic1',
+                    'city': 'Banyuwangi',
+                    'rating': 4.8
+                  }
+                ]
+              }));
 
       await provider.fetchRestaurantList();
 
@@ -126,7 +129,8 @@ void main() {
       final restaurant = state.data[0];
       expect(restaurant.id, '1');
       expect(restaurant.name, 'Pondok Rasa Banyuwangi');
-      expect(restaurant.description, 'Menyediakan hidangan laut segar khas Banyuwangi.');
+      expect(restaurant.description,
+          'Menyediakan hidangan laut segar khas Banyuwangi.');
       expect(restaurant.pictureId, 'pic1');
       expect(restaurant.city, 'Banyuwangi');
       expect(restaurant.rating, 4.8);
