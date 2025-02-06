@@ -8,6 +8,7 @@ import 'package:restaurant_review/providers/home/restaurant_list_provider.dart';
 import 'package:restaurant_review/providers/main/index_nav_provider.dart';
 import 'package:restaurant_review/providers/settings/notification/notification_provider.dart';
 import 'package:restaurant_review/providers/settings/theme_provider.dart';
+import 'package:restaurant_review/providers/home/search_provider.dart';
 import 'package:restaurant_review/screens/detail/detail_screen.dart';
 import 'package:restaurant_review/screens/main/main_screen.dart';
 import 'package:restaurant_review/static/navigation_route.dart';
@@ -34,7 +35,8 @@ void main() {
             CustomerReviewListProvider(context.read<ApiService>()),
       ),
       ChangeNotifierProvider(create: (context) => NotificationProvider()),
-      ChangeNotifierProvider(create: (context) => ThemeProvider())
+      ChangeNotifierProvider(create: (context) => ThemeProvider()),
+      ChangeNotifierProvider(create: (context) => SearchProvider()),
     ],
     child: const MainApp(),
   ));

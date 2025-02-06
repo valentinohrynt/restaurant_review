@@ -25,7 +25,6 @@ class _DetailScreenState extends State<DetailScreen>
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
-  bool _isRefreshing = false;
 
   @override
   void initState() {
@@ -143,7 +142,7 @@ class _DetailScreenState extends State<DetailScreen>
                 color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: _isRefreshing
+              child: provider.isRefreshing
                   ? SizedBox(
                       width: 24,
                       height: 24,
@@ -161,14 +160,10 @@ class _DetailScreenState extends State<DetailScreen>
                           : Theme.of(context).colorScheme.outline,
                     ),
             ),
-            onPressed: _isRefreshing
+            onPressed: provider.isRefreshing
                 ? null
                 : () async {
-                    setState(() => _isRefreshing = true);
                     await provider.refreshFromApi(widget.restaurantId);
-                    if (mounted) {
-                      setState(() => _isRefreshing = false);
-                    }
                   },
           ),
         );

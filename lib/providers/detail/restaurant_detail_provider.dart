@@ -11,6 +11,7 @@ class RestaurantDetailProvider extends ChangeNotifier {
   final ApiService _apiService;
   final DatabaseHelper _databaseHelper;
   bool _isFromLocal = false;
+  bool _isRefreshing = false;
 
   RestaurantDetailProvider(this._apiService)
       : _databaseHelper = DatabaseHelper();
@@ -19,6 +20,7 @@ class RestaurantDetailProvider extends ChangeNotifier {
   RestaurantDetailResultState get resultState => _resultState;
 
   bool get isFromLocal => _isFromLocal;
+  bool get isRefreshing => _isRefreshing;
 
   Future<void> fetchRestaurantDetail(String id) async {
     try {
@@ -90,7 +92,13 @@ class RestaurantDetailProvider extends ChangeNotifier {
   }
 
   Future<void> refreshFromApi(String id) async {
+    _isRefreshing = true;
+    notifyListeners();
+
     _isFromLocal = false;
     await _fetchFromApi(id);
+
+    _isRefreshing = false;
+    notifyListeners();
   }
 }

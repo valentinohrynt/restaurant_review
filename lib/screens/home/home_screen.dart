@@ -5,6 +5,7 @@ import 'package:restaurant_review/providers/home/restaurant_list_provider.dart';
 import 'package:restaurant_review/screens/components/restaurant_card_widget.dart';
 import 'package:restaurant_review/static/navigation_route.dart';
 import 'package:restaurant_review/static/restaurant_list_result_state.dart';
+import 'package:restaurant_review/providers/home/search_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -15,8 +16,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
-  bool _isSearchFocused = false;
-  String _previousSearch = '';
 
   @override
   void initState() {
@@ -33,7 +32,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onSearchChanged(String query) {
-    if (_previousSearch.isEmpty && query.isNotEmpty) {
+    final searchProvider = context.read<SearchProvider>();
+    if (searchProvider.previousSearch.isEmpty && query.isNotEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Searching for "$query"...'),
@@ -45,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       );
     }
-    _previousSearch = query;
+    searchProvider.setPreviousSearch(query);
     context.read<RestaurantListProvider>().searchRestaurantList(query);
   }
 
@@ -88,90 +88,95 @@ class _HomeScreenState extends State<HomeScreen> {
             delegate: _SearchBarDelegate(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Focus(
-                  onFocusChange: (hasFocus) {
-                    setState(() => _isSearchFocused = hasFocus);
-                  },
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: _isSearchFocused
-                          ? [
-                              BoxShadow(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .primary
-                                    .withOpacity(0.2),
-                                blurRadius: 8,
-                                spreadRadius: 1,
-                              )
-                            ]
-                          : [],
-                    ),
-                    child: TextField(
-                      controller: _searchController,
-                      decoration: InputDecoration(
-                        hintText: "Search restaurant ...",
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 12,
-                        ),
-                        prefixIcon: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 200),
-                          child: _isSearchFocused
-                              ? Icon(
-                                  Icons.restaurant_menu,
-                                  color: Theme.of(context).colorScheme.primary,
-                                  size: 24,
-                                )
-                              : const Icon(
-                                  Icons.search,
-                                  size: 24,
-                                ),
-                        ),
-                        prefixIconConstraints: const BoxConstraints(
-                          minWidth: 48,
-                          minHeight: 48,
-                        ),
-                        suffixIcon: _searchController.text.isNotEmpty
-                            ? IconButton(
-                                icon: const Icon(Icons.clear),
-                                onPressed: () {
-                                  _searchController.clear();
-                                  _onSearchChanged('');
-                                  FocusScope.of(context).unfocus();
-                                },
-                              )
-                            : null,
-                        border: OutlineInputBorder(
+                child: Consumer<SearchProvider>(
+                  builder: (context, provider, child) {
+                    return Focus(
+                      onFocusChange: (hasFocus) {
+                        context.read<SearchProvider>().setSearchFocus(hasFocus);
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: _isSearchFocused
-                                ? Theme.of(context).colorScheme.primary
-                                : Colors.grey,
-                          ),
+                          boxShadow: provider.isSearchFocused
+                              ? [
+                                  BoxShadow(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .primary
+                                        .withOpacity(0.2),
+                                    blurRadius: 8,
+                                    spreadRadius: 1,
+                                  )
+                                ]
+                              : [],
                         ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: Colors.grey.withOpacity(0.5),
+                        child: TextField(
+                          controller: _searchController,
+                          decoration: InputDecoration(
+                            hintText: "Search restaurant ...",
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 12,
+                            ),
+                            prefixIcon: AnimatedSwitcher(
+                              duration: const Duration(milliseconds: 200),
+                              child: provider.isSearchFocused
+                                  ? Icon(
+                                      Icons.restaurant_menu,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      size: 24,
+                                    )
+                                  : const Icon(
+                                      Icons.search,
+                                      size: 24,
+                                    ),
+                            ),
+                            prefixIconConstraints: const BoxConstraints(
+                              minWidth: 48,
+                              minHeight: 48,
+                            ),
+                            suffixIcon: _searchController.text.isNotEmpty
+                                ? IconButton(
+                                    icon: const Icon(Icons.clear),
+                                    onPressed: () {
+                                      _searchController.clear();
+                                      _onSearchChanged('');
+                                      FocusScope.of(context).unfocus();
+                                    },
+                                  )
+                                : null,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: provider.isSearchFocused
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Colors.grey,
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: Colors.grey.withOpacity(0.5),
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide(
+                                color: Theme.of(context).colorScheme.primary,
+                                width: 2,
+                              ),
+                            ),
+                            filled: true,
+                            fillColor: provider.isSearchFocused
+                                ? Theme.of(context).colorScheme.surface
+                                : Colors.grey.withOpacity(0.1),
                           ),
+                          onChanged: _onSearchChanged,
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.primary,
-                            width: 2,
-                          ),
-                        ),
-                        filled: true,
-                        fillColor: _isSearchFocused
-                            ? Theme.of(context).colorScheme.surface
-                            : Colors.grey.withOpacity(0.1),
                       ),
-                      onChanged: _onSearchChanged,
-                    ),
-                  ),
+                    );
+                  },
                 ),
               ),
             ),

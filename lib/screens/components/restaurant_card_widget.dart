@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:restaurant_review/data/model/restaurant.dart';
+import 'package:restaurant_review/utils/image_helper.dart';
 
 class RestaurantCard extends StatelessWidget {
   final Restaurant restaurant;
@@ -36,14 +38,35 @@ class RestaurantCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Hero(
-                tag: restaurant.pictureId!,
-                child: Image.network(
+              FutureBuilder<File?>(
+                future: ImageHelper.getImage(
                   'https://restaurant-api.dicoding.dev/images/small/${restaurant.pictureId}',
-                  height: 200,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
                 ),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Container(
+                      height: 200,
+                      width: double.infinity,
+                      color: Colors.grey[300],
+                      child: const Center(child: CircularProgressIndicator()),
+                    );
+                  } else if (snapshot.hasData && snapshot.data != null) {
+                    return Image.file(
+                      snapshot.data!,
+                      height: 200,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    );
+                  } else {
+                    return Container(
+                      height: 200,
+                      width: double.infinity,
+                      color: Colors.grey[300],
+                      child: const Icon(Icons.broken_image,
+                          size: 50, color: Colors.grey),
+                    );
+                  }
+                },
               ),
               Container(
                 padding: const EdgeInsets.all(12),
