@@ -4,7 +4,9 @@ import 'package:restaurant_review/data/model/restaurant.dart';
 import 'package:restaurant_review/providers/detail/restaurant_detail_provider.dart';
 import 'package:restaurant_review/providers/detail/customer_review_list_provider.dart';
 import 'dart:ui';
+import 'dart:io';
 import 'package:restaurant_review/screens/components/marquee_text.dart';
+import 'package:restaurant_review/utils/image_helper.dart';
 
 class RestaurantDetailBodyWidget extends StatelessWidget {
   const RestaurantDetailBodyWidget({
@@ -14,6 +16,7 @@ class RestaurantDetailBodyWidget extends StatelessWidget {
 
   final Restaurant restaurant;
 
+  @override
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -27,9 +30,30 @@ class RestaurantDetailBodyWidget extends StatelessWidget {
                 child: SizedBox(
                   height: 450,
                   width: double.infinity,
-                  child: Image.network(
-                    'https://restaurant-api.dicoding.dev/images/large/${restaurant.pictureId}',
-                    fit: BoxFit.cover,
+                  child: FutureBuilder<File?>(
+                    future: ImageHelper.getImage(
+                      'https://restaurant-api.dicoding.dev/images/large/${restaurant.pictureId}',
+                    ),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Container(
+                          color: Colors.grey[300],
+                          child:
+                              const Center(child: CircularProgressIndicator()),
+                        );
+                      } else if (snapshot.hasData && snapshot.data != null) {
+                        return Image.file(
+                          snapshot.data!,
+                          fit: BoxFit.cover,
+                        );
+                      } else {
+                        return Container(
+                          color: Colors.grey[300],
+                          child: const Icon(Icons.broken_image,
+                              size: 50, color: Colors.grey),
+                        );
+                      }
+                    },
                   ),
                 ),
               ),
