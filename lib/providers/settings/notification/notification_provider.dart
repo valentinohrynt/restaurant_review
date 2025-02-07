@@ -45,7 +45,7 @@ class NotificationProvider with ChangeNotifier {
 
   Future<void> _startDailyReminder() async {
     await Workmanager().cancelAll();
-    await Workmanager().initialize(callbackDispatcher, isInDebugMode: true);
+    await Workmanager().initialize(callbackDispatcher, isInDebugMode: isTestMode);
 
     final initialDelay = _getInitialDelay();
     if (kDebugMode) {
