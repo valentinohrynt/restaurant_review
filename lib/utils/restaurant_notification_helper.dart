@@ -56,7 +56,7 @@ class RestaurantNotificationHelper {
 
       await flutterLocalNotificationsPlugin.show(
         0,
-        'Today\'s Restaurant Pick: ${restaurant.name}',
+        'Time for Lunch! Recommendation: ${restaurant.name} 🍽️',
         '⭐ ${restaurant.rating} - $truncatedDescription',
         platformChannelSpecifics,
       );
