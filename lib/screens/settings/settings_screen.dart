@@ -64,7 +64,7 @@ class SettingsScreen extends StatelessWidget {
                       title: 'Daily Notifications',
                       value: notificationProvider.isDailyReminderActive,
                       onChanged: (_) async {
-                        await notificationProvider.toggleTestMode(true);
+                        await notificationProvider.toggleTestMode(false);
                         await notificationProvider.toggleDailyReminder();
                       },
                     );
